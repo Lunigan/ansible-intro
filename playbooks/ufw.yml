@@ -1,5 +1,29 @@
-- name: Install and config UFW on all hosts
+- name: Install and configure UFW on all hosts
   hosts: all
   become: yes
   tasks:
-    - ufw
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: present
+        update_cache: yes
+
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Deny all other incoming connections
+      ufw:
+        rule: deny
+        direction: incoming
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
