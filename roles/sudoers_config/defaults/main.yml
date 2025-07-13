@@ -1,2 +1,3 @@
 ---
 # defaults file for sudoers_config
+sudoers_user: "{{ ansible_user }}"

@@ -1,0 +1,18 @@
+- import_playbook: apt_upgrade.yml
+
+- name: Initial Setup for Ubuntu Server
+  hosts: all
+  become: true
+  roles:
+    - sudoers_config
+  tasks:
+    - name: Install Net-Tools
+      apt:
+        name: net-tools
+        state: present
+        update_cache: yes
+    - name: Install htop
+      apt:
+        name: htop
+        state: present
+        update_cache: yes
