@@ -1,4 +1,5 @@
 - import_playbook: apt_upgrade.yml
+- import_playbook: ufw_setup.yml
 
 - name: Initial Setup for Ubuntu Server
   hosts: all

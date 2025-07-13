@@ -19,6 +19,12 @@
         port: '80'
         proto: tcp
 
+    - name: Allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
     - name: Deny all other incoming connections
       ufw:
         rule: deny
