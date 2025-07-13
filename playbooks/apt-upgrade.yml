@@ -1,8 +1,11 @@
-- name: Updage and Upgrade apt in all hosts
+- name: Update and upgrade APT packages
   hosts: all
   become: yes
   tasks:
-    - name: apt
+    - name: Update APT package cache
       apt:
-        upgrade_cache: yes
-        upgrade: yes
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist

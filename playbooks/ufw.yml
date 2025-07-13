@@ -1,0 +1,5 @@
+- name: Install and config UFW on all hosts
+  hosts: all
+  become: yes
+  tasks:
+    - ufw
