@@ -5,7 +5,8 @@
   hosts: all
   become: true
   roles:
-    - sudoers_config
+    - role: sudoers_config
+      sudoers_user: "{{ ansible_user }}"
   tasks:
     - name: Install Net-Tools
       apt:
