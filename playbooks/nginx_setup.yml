@@ -12,3 +12,36 @@
       state: present
       update_cache: yes
     when: "'nginx' not in ansible_facts.packages"
+
+  - name: Upload deploy key
+    copy:
+      src: files/id_rsa
+      dest: /home/{{ ansible_user }}/.ssh/id_rsa
+      owner: "{{ ansible_user }}"
+      mode: '0600'
+
+  - name: Clone website repo
+    git:
+      repo: git@github.com:Lunigan/nginx-website.git
+      dest: /opt/static-site
+      version: main
+
+  - name: Deploy Nginx config for site
+    copy:
+      src: /opt/static-site/nginx/default.conf
+      dest: /etc/nginx/sites-available/my-website.conf
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Enable site
+    file:
+      src: /etc/nginx/sites-available/my-website.conf
+      dest: /etc/nginx/sites-enabled/my-website.conf
+      state: link
+      force: yes
+
+  - name: Restart Nginx
+    service:
+      name: nginx
+      state: restarted
