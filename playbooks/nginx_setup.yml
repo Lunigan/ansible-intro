@@ -20,10 +20,7 @@
     register: existing_key
 
   - name: Get checksum of local key
-    local_action:
-      stat:
-        path: vault/id_rsa
-        checksum_algorithm: sha1
+    local_action: stat path=vault/id_rsa checksum_algorithm=sha1
     register: local_key
 
   - name: Upload deploy key
