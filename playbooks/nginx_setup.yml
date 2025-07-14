@@ -34,7 +34,7 @@
 
   - name: Upload deploy key
     copy:
-      src: vault/id_rsa
+      src: ../vault/id_rsa
       dest: /home/{{ ansible_user }}/.ssh/id_rsa
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
