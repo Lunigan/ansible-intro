@@ -1,12 +1,6 @@
 - name: Install and configure UFW on all hosts
   hosts: all
   become: yes
-  vars:
-    ufw_rules:
-      - { rule: allow, name: OpenSSH }
-      - { rule: allow, port: 80, proto: tcp }
-      - { rule: allow, port: 443, proto: tcp }
-      - { rule: deny, direction: in }
   tasks:
   - name: Gather installed packages
     package_facts:
@@ -19,28 +13,61 @@
       update_cache: yes
     when: "'ufw' not in ansible_facts.packages"
 
-  - name: Simulate each UFW rule
+  - name: Check if OpenSSH rule would change
     community.general.ufw:
-      rule: "{{ item.rule }}"
-      name: "{{ item.name | default(omit) }}"
-      port: "{{ item.port | default(omit) }}"
-      proto: "{{ item.proto | default(omit) }}"
-      direction: "{{ item.direction | default(omit) }}"
-    loop: "{{ ufw_rules }}"
+      rule: allow
+      name: OpenSSH
     check_mode: yes
-    register: rule_checks
+    register: ssh_rule_check
 
-  - name: Apply required UFW rules
+  - name: Allow SSH if needed
     community.general.ufw:
-      rule: "{{ item.0.rule }}"
-      name: "{{ item.0.name | default(omit) }}"
-      port: "{{ item.0.port | default(omit) }}"
-      proto: "{{ item.0.proto | default(omit) }}"
-      direction: "{{ item.0.direction | default(omit) }}"
-    when: item.1.changed
-    loop: "{{ ufw_rules | zip(rule_checks.results) | list }}"
-    loop_control:
-      label: "{{ item.0.name | default(item.0.port | string) }}"
+      rule: allow
+      name: OpenSSH
+    when: ssh_rule_check.changed
+
+  - name: Check if HTTP rule would change
+    community.general.ufw:
+      rule: allow
+      port: 80
+      proto: tcp
+    check_mode: yes
+    register: http_rule_check
+
+  - name: Allow HTTP if needed
+    community.general.ufw:
+      rule: allow
+      port: '80'
+      proto: tcp
+    when: http_rule_check.changed
+
+  - name: Check if HTTPS rule would change
+    community.general.ufw:
+      rule: allow
+      port: 443
+      proto: tcp
+    check_mode: yes
+    register: https_rule_check
+
+  - name: Allow HTTPS if needed
+    community.general.ufw:
+      rule: allow
+      port: '443'
+      proto: tcp
+    when: https_rule_check.changed
+
+  - name: Check if DENY all rule would change
+    community.general.ufw:
+      rule: deny
+      direction: in
+    check_mode: yes
+    register: deny_check
+
+  - name: Deny all other incoming connections if needed
+    community.general.ufw:
+      rule: deny
+      direction: in
+    when: deny_check.changed
 
   - name: Check if UFW is enabled
     command: ufw status
