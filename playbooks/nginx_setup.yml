@@ -1,0 +1,14 @@
+- name: Install and configure NGINX
+  hosts: all
+  become: yes
+  tasks:
+  - name: Gather installed packages
+    package_facts:
+      manager: apt
+
+  - name: Install NGINX if not present
+    apt:
+      name: nginx
+      state: present
+      update_cache: yes
+    when: "'nginx' not in ansible_facts.packages"
