@@ -1,6 +1,7 @@
 - name: Install and configure NGINX
   hosts: all
   become: yes
+
   tasks:
   - name: Gather installed packages
     package_facts:
@@ -81,6 +82,10 @@
     debug:
       msg: "New commits pulled!"
     when: clone_result.changed
+
+  - name: Show all handlers
+    debug:
+      var: ansible_playbook_handlers
 
   - name: Deploy Nginx config for site
     copy:
