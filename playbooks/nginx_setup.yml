@@ -45,6 +45,14 @@
       - existing_key.stat.exists == false or
         (existing_key.stat.checksum is defined and existing_key.stat.checksum != local_key.stat.checksum)
 
+  - name: Ensure GitHub is in known_hosts
+    ansible.builtin.known_hosts:
+      path: /home/{{ ansible_user }}/.ssh/known_hosts
+      name: github.com
+      key: "{{ lookup('pipe', 'ssh-keyscan -H github.com') }}"
+      state: present
+    become: false
+
   - name: Clone website repo
     git:
       repo: git@github.com:Lunigan/nginx-website.git
