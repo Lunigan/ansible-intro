@@ -62,6 +62,7 @@
       var: whoami_result.stdout
 
   - name: Clone website repo
+    become: false
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
