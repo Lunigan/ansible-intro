@@ -13,18 +13,39 @@
       update_cache: yes
     when: "'nginx' not in ansible_facts.packages"
 
+  - name: Get checksum of deployed key
+    stat:
+      path: /home/{{ ansible_user }}/.ssh/id_rsa
+      checksum_algorithm: sha1
+    register: existing_key
+
+  - name: Get checksum of local key
+    local_action:
+      stat:
+        path: vault/id_rsa
+        checksum_algorithm: sha1
+    register: local_key
+
   - name: Upload deploy key
     copy:
-      src: files/id_rsa
+      src: vault/id_rsa
       dest: /home/{{ ansible_user }}/.ssh/id_rsa
       owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
       mode: '0600'
+    when: existing_key.stat.checksum != local_key.stat.checksum
 
   - name: Clone website repo
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
       version: main
+    register: clone_result
+
+  - name: Log repo update
+    debug:
+      msg: "New commits pulled!"
+    when: clone_result.changed
 
   - name: Deploy Nginx config for site
     copy:
@@ -33,6 +54,7 @@
       owner: root
       group: root
       mode: '0644'
+    notify: Restart nginx
 
   - name: Enable site
     file:
@@ -40,8 +62,10 @@
       dest: /etc/nginx/sites-enabled/my-website.conf
       state: link
       force: yes
+    notify: Restart nginx
 
-  - name: Restart Nginx
-    service:
-      name: nginx
-      state: restarted
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
