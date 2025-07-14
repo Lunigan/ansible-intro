@@ -19,7 +19,7 @@
       checksum_algorithm: sha1
     register: existing_key
 
-  - name: Debug stat results
+  - name: Debug stat results - deployed
     debug:
       var: existing_key
 
@@ -27,6 +27,10 @@
     local_action: stat path=vault/id_rsa checksum_algorithm=sha1
     register: local_key
     become: yes
+
+  - name: Debug stat results - local
+    debug:
+      var: local_key
 
   - name: Upload deploy key
     copy:
