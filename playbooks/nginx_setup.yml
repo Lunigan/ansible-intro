@@ -61,6 +61,14 @@
   - debug:
       var: whoami_result.stdout
 
+  - name: Create /opt/static-site with correct permissions
+    file:
+      path: /opt/static-site
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0755'
+
   - name: Clone website repo
     become: false
     git:
