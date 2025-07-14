@@ -32,15 +32,15 @@
 
   - name: Apply required UFW rules
     community.general.ufw:
-      rule: "{{ item.rule }}"
-      name: "{{ item.name | default(omit) }}"
-      port: "{{ item.port | default(omit) }}"
-      proto: "{{ item.proto | default(omit) }}"
-      direction: "{{ item.direction | default(omit) }}"
-    when: rule_checks.results[loop.index0].changed
-    loop: "{{ ufw_rules }}"
+      rule: "{{ item.0.rule }}"
+      name: "{{ item.0.name | default(omit) }}"
+      port: "{{ item.0.port | default(omit) }}"
+      proto: "{{ item.0.proto | default(omit) }}"
+      direction: "{{ item.0.direction | default(omit) }}"
+    when: item.1.changed
+    loop: "{{ ufw_rules | zip(rule_checks.results) | list }}"
     loop_control:
-      label: "{{ item.name | default(item.port | string) }}"
+      label: "{{ item.0.name | default(item.0.port | string) }}"
 
   - name: Check if UFW is enabled
     command: ufw status
