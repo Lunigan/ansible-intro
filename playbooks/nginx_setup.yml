@@ -39,7 +39,11 @@
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
       mode: '0600'
-    when: existing_key.stat.checksum != local_key.stat.checksum
+    when:
+      - local_key.stat.exists
+      - local_key.stat.checksum is defined
+      - existing_key.stat.exists == false or
+        (existing_key.stat.checksum is defined and existing_key.stat.checksum != local_key.stat.checksum)
 
   - name: Clone website repo
     git:
