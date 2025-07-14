@@ -1,8 +1,9 @@
 ---
 # tasks file for sudoers_config
 - name: Check if passwordless sudo is configured
-  shell: "grep -r 'NOPASSWD' /etc/sudoers.d || echo 'Not found'"
+  command: grep -r 'NOPASSWD' /etc/sudoers.d
   register: sudo_status
+  ignore_errors: true
   changed_when: false
 
 - name: Ensure sudoers.d directory exists
@@ -11,12 +12,18 @@
     state: directory
     mode: '0755'
 
+- name: Debug who's getting sudo access
+  debug:
+    msg: "Configuring passwordless sudo for user {{ sudoers_user }}"
+
 - name: Allow passwordless sudo for ansible user
   lineinfile:
     path: /etc/sudoers.d/ansible-nopasswd
     create: yes
     state: present
     line: "{{ sudoers_user }} ALL=(ALL) NOPASSWD:ALL"
+    regexp: "^{{ sudoers_user }} ALL=\\(ALL\\) NOPASSWD:ALL$"
     validate: '/usr/sbin/visudo -cf %s'
     mode: '0440'
-  when: "'NOPASSWD' not in sudo_status.stdout"
+    insertafter: EOF
+    backup: yes

@@ -2,34 +2,80 @@
   hosts: all
   become: yes
   tasks:
-    - name: Install UFW
-      apt:
-        name: ufw
-        state: present
-        update_cache: yes
+  - name: Gather installed packages
+    package_facts:
+      manager: apt
 
-    - name: Allow SSH
-      ufw:
-        rule: allow
-        name: OpenSSH
+  - name: Install UFW if not present
+    apt:
+      name: ufw
+      state: present
+      update_cache: yes
+    when: "'ufw' not in ansible_facts.packages"
 
-    - name: Allow HTTP
-      ufw:
-        rule: allow
-        port: '80'
-        proto: tcp
+  - name: Check if OpenSSH rule would change
+    community.general.ufw:
+      rule: allow
+      name: OpenSSH
+    check_mode: yes
+    register: ssh_rule_check
 
-    - name: Allow HTTPS
-      ufw:
-        rule: allow
-        port: '443'
-        proto: tcp
+  - name: Allow SSH if needed
+    community.general.ufw:
+      rule: allow
+      name: OpenSSH
+    when: ssh_rule_check.changed
 
-    - name: Deny all other incoming connections
-      ufw:
-        rule: deny
-        direction: in
+  - name: Check if HTTP rule would change
+    community.general.ufw:
+      rule: allow
+      port: 80
+      proto: tcp
+    check_mode: yes
+    register: http_rule_check
 
-    - name: Enable UFW
-      ufw:
-        state: enabled
+  - name: Allow HTTP if needed
+    community.general.ufw:
+      rule: allow
+      port: '80'
+      proto: tcp
+    when: http_rule_check.changed
+
+  - name: Check if HTTPS rule would change
+    community.general.ufw:
+      rule: allow
+      port: 443
+      proto: tcp
+    check_mode: yes
+    register: https_rule_check
+
+  - name: Allow HTTPS if needed
+    community.general.ufw:
+      rule: allow
+      port: '443'
+      proto: tcp
+    when: https_rule_check.changed
+
+  - name: Check if DENY all rule would change
+    community.general.ufw:
+      rule: deny
+      direction: in
+    check_mode: yes
+    register: deny_check
+
+  - name: Deny all other incoming connections if needed
+    community.general.ufw:
+      rule: deny
+      direction: in
+    when: deny_check.changed
+
+  - name: Check if UFW is enabled
+    command: ufw status
+    register: ufw_status
+    changed_when: false
+    failed_when: false
+
+  - name: Enable UFW
+    ufw:
+      state: enabled
+    when: "'inactive' in ufw_status.stdout"
