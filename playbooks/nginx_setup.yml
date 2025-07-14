@@ -53,6 +53,14 @@
       state: present
     become: false
 
+  - name: Print current user
+    ansible.builtin.command: whoami
+    register: whoami_result
+    changed_when: false
+
+  - debug:
+      var: whoami_result.stdout
+
   - name: Clone website repo
     git:
       repo: git@github.com:Lunigan/nginx-website.git
