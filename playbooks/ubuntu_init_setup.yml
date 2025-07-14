@@ -8,13 +8,19 @@
     - role: sudoers_config
       sudoers_user: "{{ ansible_user }}"
   tasks:
-    - name: Install Net-Tools
+    - name: Gather installed packages
+      package_facts:
+        manager: apt
+
+    - name: Update APT cache
       apt:
-        name: net-tools
-        state: present
         update_cache: yes
-    - name: Install htop
+
+    - name: Install missing common tools
       apt:
-        name: htop
+        name: "{{ item }}"
         state: present
-        update_cache: yes
+      loop:
+        - net-tools
+        - htop
+      when: "item not in ansible_facts.packages.keys()"
