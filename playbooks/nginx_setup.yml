@@ -83,15 +83,6 @@
       msg: "New commits pulled!"
     when: clone_result.changed
 
-  - name: Show all handlers
-    debug:
-      var: ansible_playbook_handlers
-
-  - name: Trigger handler manually
-    debug:
-      msg: "Triggering handler"
-    notify: Restart Nginx
-
   - name: Deploy Nginx config for site
     copy:
       src: /opt/static-site/nginx/default
