@@ -90,7 +90,7 @@
   - name: Trigger handler manually
     debug:
       msg: "Triggering handler"
-    notify: Restart nginx
+    notify: Restart Nginx
 
   - name: Deploy Nginx config for site
     copy:
@@ -100,7 +100,7 @@
       group: root
       mode: '0644'
       remote_src: yes      
-    notify: Restart nginx
+    notify: Restart Nginx
 
   - name: Enable site
     file:
@@ -108,7 +108,7 @@
       dest: /etc/nginx/sites-enabled/default.conf
       state: link
       force: yes
-    notify: Restart nginx
+    notify: Restart Nginx
 
   handlers:
     - name: Restart Nginx
