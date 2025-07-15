@@ -94,8 +94,8 @@
 
   - name: Deploy Nginx config for site
     copy:
-      src: /opt/static-site/nginx/default.conf
-      dest: /etc/nginx/sites-available/default.conf
+      src: /opt/static-site/nginx/default
+      dest: /etc/nginx/sites-available/default
       owner: root
       group: root
       mode: '0644'
@@ -104,8 +104,8 @@
 
   - name: Enable site
     file:
-      src: /etc/nginx/sites-available/default.conf
-      dest: /etc/nginx/sites-enabled/default.conf
+      src: /etc/nginx/sites-available/default
+      dest: /etc/nginx/sites-enabled/default
       state: link
       force: yes
     notify: Restart Nginx
