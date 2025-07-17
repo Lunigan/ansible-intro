@@ -83,7 +83,7 @@
       groups: webteam
       append: yes
 
-  - name: Create /opt/static-site with correct permissions
+  - name: Create /opt/static-site/ with correct permissions
     file:
       path: /opt/static-site
       state: directory
@@ -91,14 +91,22 @@
       group: webteam
       mode: '2775'
 
+  - name: Create static-site-clone with correct permissions
+    file:
+      path: "/home/{{ ansible_user }}/static-site-repo"
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '2775'
+
   - name: Mark static-site as safe directory
-    command: git config --global --add safe.directory /opt/static-site
+    command: git config --global --add safe.directory "/home/{{ ansible_user }}/static-site-repo"
 
   - name: Clone website repo
     become: false
     git:
       repo: git@github.com:Lunigan/nginx-website.git
-      dest: /opt/static-site
+      dest: "/home/{{ ansible_user }}/static-site-repo"
       version: main
     register: clone_result
 
@@ -106,6 +114,21 @@
     debug:
       msg: "New commits pulled!"
     when: clone_result.changed
+
+  - name: Sync static site repo with correct ownership
+    synchronize:
+      src: "/home/{{ ansible_user }}/static-site-repo/"
+      dest: /opt/static-site/
+      rsync_opts:
+        - "--chown=webapp:webteam"
+
+  - name: Reapply sticky group on /opt/static-site
+    file:
+      path: /opt/static-site
+      state: directory
+      owner: webapp
+      group: webteam
+      mode: '2775'
 
   - name: Deploy Nginx config for site
     become: yes
