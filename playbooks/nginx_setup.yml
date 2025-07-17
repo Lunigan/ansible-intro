@@ -116,6 +116,7 @@
     when: clone_result.changed
 
   - name: Sync static site repo with correct ownership
+    become: false
     synchronize:
       src: "/home/{{ ansible_user }}/static-site-repo/"
       dest: /opt/static-site/
