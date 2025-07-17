@@ -92,7 +92,7 @@
       mode: '0775'
 
   - name: Clone website repo
-    become: yes
+    become: false
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
