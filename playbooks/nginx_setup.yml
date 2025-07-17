@@ -121,6 +121,7 @@
     debug:
       msg: "New commits pulled!"
     when: clone_result.changed
+    notify: Restart Nginx
 
   - name: Sync static site repo with correct ownership
     become: false
