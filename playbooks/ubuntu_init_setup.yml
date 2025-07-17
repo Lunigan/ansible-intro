@@ -4,9 +4,6 @@
 - name: Initial Setup for Ubuntu Server
   hosts: all
   become: true
-  roles:
-    - role: sudoers_config
-      sudoers_user: "{{ ansible_user }}"
   tasks:
     - name: Gather installed packages
       package_facts:

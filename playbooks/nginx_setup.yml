@@ -1,7 +1,6 @@
 - name: Install and configure NGINX
   hosts: all
   become: yes
-
   tasks:
   - name: Gather installed packages
     package_facts:
@@ -59,15 +58,20 @@
     register: whoami_result
     changed_when: false
 
-  - debug:
-      var: whoami_result.stdout
+  - name: Create dedicated user
+    user:
+      name: webapp
+      shell: /bin/bash
+      home: /home/webapp
+      create_home: yes
+      system: no
 
   - name: Create /opt/static-site with correct permissions
     file:
       path: /opt/static-site
       state: directory
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
+      owner: webapp
+      group: webapp
       mode: '0755'
 
   - name: Clone website repo
