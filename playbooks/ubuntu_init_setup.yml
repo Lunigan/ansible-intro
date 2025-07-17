@@ -9,10 +9,6 @@
       package_facts:
         manager: apt
 
-    - name: Update APT cache
-      apt:
-        update_cache: yes
-
     - name: Install missing tools
       apt:
         name: "{{ item }}"
@@ -52,7 +48,7 @@
 
     - name: Reconfigure unattended-upgrades
       command: dpkg-reconfigure -f noninteractive unattended-upgrades
-      when: ansible_facts.packages.unattended-upgrades is defined
+      when: "'unattended-upgrades' in ansible_facts.packages"
 
     - name: Ensure fail2ban is running and enabled
       service:
