@@ -93,12 +93,9 @@
 
   - name: Mark static-site as safe directory
     command: git config --global --add safe.directory /opt/static-site
-    become: yes
-    become_user: webapp
 
   - name: Clone website repo
-    become: yes
-    become_user: webapp
+    become: false
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
