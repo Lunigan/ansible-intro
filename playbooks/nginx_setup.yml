@@ -66,13 +66,30 @@
       create_home: yes
       system: no
 
+  - name: Create shared group for site access
+    group:
+      name: webteam
+      state: present
+
+  - name: Add webapp to webteam group
+    user:
+      name: webapp
+      groups: webteam
+      append: yes
+
+  - name: Add ansible_user to webteam group
+    user:
+      name: "{{ ansible_user }}"
+      groups: webteam
+      append: yes
+
   - name: Create /opt/static-site with correct permissions
     file:
       path: /opt/static-site
       state: directory
       owner: webapp
-      group: webapp
-      mode: '0755'
+      group: webteam
+      mode: '0775'
 
   - name: Clone website repo
     become: yes
