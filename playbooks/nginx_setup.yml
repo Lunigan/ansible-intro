@@ -75,7 +75,8 @@
       mode: '0755'
 
   - name: Clone website repo
-    become: false
+    become: yes
+    become_user: webapp
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
@@ -88,13 +89,15 @@
     when: clone_result.changed
 
   - name: Deploy Nginx config for site
+    become: yes
+    become_user: webapp
     copy:
       src: /opt/static-site/nginx/default
       dest: /etc/nginx/sites-available/default
       owner: root
       group: root
       mode: '0644'
-      remote_src: yes      
+      remote_src: yes
     notify: Restart Nginx
 
   - name: Enable site
