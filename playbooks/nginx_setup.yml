@@ -26,7 +26,6 @@
   - name: Get checksum of local key
     local_action: stat path=../vault/id_rsa checksum_algorithm=sha1
     register: local_key
-    become: yes
 
   - name: Debug stat results - local
     debug:
@@ -142,7 +141,6 @@
       mode: '2775'
 
   - name: Deploy Nginx config for site
-    become: yes
     copy:
       src: /opt/static-site/nginx/default
       dest: /etc/nginx/sites-available/default
