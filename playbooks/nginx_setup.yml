@@ -105,6 +105,22 @@
       force: yes
     notify: Restart Nginx
 
+  - name: Perform HTTP GET test on deployed site
+    uri:
+      url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}
+      return_content: yes
+      status_code: 200
+    register: web_response
+
+  - name: Show response summary
+    debug:
+      msg: "HTTP status: {{ web_response.status }} | Length: {{ web_response.content | length }}"
+
+  - name: Page contains expected <title>
+    assert:
+      that:
+        - '"<h1>Ansible test - success</h1>" in web_response.content'
+
   handlers:
     - name: Restart Nginx
       service:
