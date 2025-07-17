@@ -91,8 +91,14 @@
       group: webteam
       mode: '2775'
 
+  - name: Mark static-site as safe directory
+    command: git config --global --add safe.directory /opt/static-site
+    become: yes
+    become_user: webapp
+
   - name: Clone website repo
-    become: false
+    become: yes
+    become_user: webapp
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
