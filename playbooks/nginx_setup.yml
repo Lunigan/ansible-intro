@@ -89,7 +89,7 @@
       state: directory
       owner: webapp
       group: webteam
-      mode: '0775'
+      mode: '2775'
 
   - name: Clone website repo
     become: false
