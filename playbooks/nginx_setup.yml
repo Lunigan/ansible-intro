@@ -93,7 +93,6 @@
 
   - name: Clone website repo
     become: yes
-    become_user: webapp
     git:
       repo: git@github.com:Lunigan/nginx-website.git
       dest: /opt/static-site
@@ -107,7 +106,6 @@
 
   - name: Deploy Nginx config for site
     become: yes
-    become_user: webapp
     copy:
       src: /opt/static-site/nginx/default
       dest: /etc/nginx/sites-available/default
