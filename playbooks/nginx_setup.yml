@@ -122,6 +122,7 @@
       dest: /opt/static-site/
       rsync_opts:
         - "--chown=webapp:webteam"
+    delegate_to: "{{ inventory_hostname }}"
 
   - name: Reapply sticky group on /opt/static-site
     file:
