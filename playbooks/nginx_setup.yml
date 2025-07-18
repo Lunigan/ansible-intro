@@ -107,6 +107,7 @@
   - name: Mark static-site as safe directory
     command: git config --global --add safe.directory "/home/{{ ansible_user }}/static-site-repo"
     when: safe_directory_check.rc != 0
+    become: false
 
   - name: Clone website repo
     become: false
