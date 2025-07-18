@@ -2,15 +2,22 @@
 
 This repository contains playbooks for basic UFW configuration, updates and NGINX configuration.
 
+**Automates:**
+* Initial server setup
+* Firewall configuration with UFW
+* Security hardening (SSH, fail2ban, root login)
+* Automatic updates
+* NGINX static site deployment
+
 ## Repository structure
 
 ### inventory/
 
-This Directory contains connection details for all targeted hosts.
+This directory contains connection details for all targeted hosts.
 
 #### hosts.yml
 
-This YML file currently containes configuration for my local setup build with Virtual Box.
+This YML file currently contains configuration for my local setup build with VirtualBox.
 ___
 
 ### playbooks/
@@ -21,7 +28,9 @@ This directory contains all playbooks needed.
 
 This playbook is used to update `apt` cache and upgrade packages.
 
-`sudo apt update && sudo apt upgrade`
+```bash
+sudo apt update && sudo apt upgrade
+```
 
 #### ufw_setup.yml
 
@@ -45,23 +54,27 @@ Next it configures several security options:
 * SSH login has maximum of 5 attempts and then user is banned for 1 hour
 * Configured automatic security updates
 
-`ansible-playbook playbooks/ubuntu_init_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass`
+```bash
+ansible-playbook playbooks/ubuntu_init_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+```
 
 #### nginx_setup.yml
 
-This playbook is used to upload SSH key encrypted with `ansible-vault` and use it to clone static site from `git` repository and place it inside `/opt/static-page/` with ownership being set to `webapp:webteam`.  
+This playbook is used to upload SSH key encrypted with `ansible-vault` and use it to clone static site from `git` repository and place it inside `/opt/static-site/` with ownership being set to `webapp:webteam`.  
 Another part of this playbook handles NGINX installation and change of default config for our own.
 
-`ansible-playbook playbooks/nginx_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass`
+```bash
+ansible-playbook playbooks/nginx_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+```
 ___
 
 ### vault/
 
-This directory contains sensitive files encrypted by ansible-vault.
+This directory contains sensitive files encrypted by `ansible-vault`.
 
 #### id_rsa
 
-SSH key encrypted with `ansible-vault` and used for `git` authentication.
+Encrypted SSH private key used to authenticate with GitHub when cloning the static site repository. Decryption via `ansible-vault` is required for usage.
 ___
 
 ### .gitignore
@@ -75,6 +88,26 @@ ___
 
 ## How to use it
 
-ansible-playbook playbooks/ubuntu_init_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+Command structure to run playbook on specified inventory
+```bash
+ansible-playbook path_to/playbook.yml -i path_to/inventory.yml --ask-vault-pass --ask-become-pass
+```
 
-`ansible-playbook path_to/playbook.yml -i path_to/inventory.yml --ask-vault-pass --ask-become-pass`
+Run ubuntu initialization playbook
+```bash
+ansible-playbook playbooks/ubuntu_init_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+```
+
+## Getting Started
+
+1. Clone this repository
+2. Customize `inventory/hosts.yml` for your environment
+3. Run the playbooks as needed:
+
+```bash
+ansible-playbook playbooks/ubuntu_init_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+```
+
+```bash
+ansible-playbook playbooks/nginx_setup.yml -i inventory/hosts.yml --ask-vault-pass --ask-become-pass
+```
