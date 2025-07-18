@@ -154,6 +154,9 @@
       force: yes
     notify: Restart Nginx
 
+  - name: Ensure NGINX is restarted before testing
+    meta: flush_handlers
+
   - name: Perform HTTP GET test on deployed site
     uri:
       url: http://{{ hostvars[inventory_hostname]['ansible_host'] }}
