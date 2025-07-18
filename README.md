@@ -79,7 +79,7 @@ ___
 
 ### .gitignore
 
-Git ignore for VS Code.
+Contains .vscode/ and other local config paths to keep repo clean.
 
 ### README.md
 
